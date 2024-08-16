@@ -8,5 +8,11 @@
   },
   "keywords": [],
   "author": "",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "js30": "file:"
+  },
+  "devDependencies": {
+    "typescript": "^5.5.4"
+  }
 }
