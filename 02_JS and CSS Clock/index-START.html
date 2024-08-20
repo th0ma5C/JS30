@@ -67,7 +67,8 @@
       position: absolute;
       top: 50%;
       transform-origin: right center;
-      transition: transform 0.3s ease;
+      transition: transform 1s linear;
+      transform: translate(-100%, -50%);
     }
 
     .hour-hand {
@@ -75,7 +76,6 @@
       height: 8px;
       z-index: 1;
       left: 50%;
-      transform: translate(-100%, -50%) rotate(30deg);
 
     }
 
@@ -83,7 +83,6 @@
       width: 45%;
       z-index: 2;
       left: 50%;
-      transform: translate(-100%, -50%);
     }
 
     .second-hand {
@@ -91,7 +90,6 @@
       height: 3px;
       z-index: 3;
       left: 50%;
-      transform: translate(-100%, -50%);
     }
   </style>
 

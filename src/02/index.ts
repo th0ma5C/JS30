@@ -1,62 +1,70 @@
 class Clock {
-    // private hour;
-    // private minute;
-    // private second;
-    private hourHand: HTMLDivElement | null;
-    private minuteHand: HTMLDivElement | null;
-    private secondHand: HTMLDivElement | null;
+    #hoursDeg;
+    #minDeg;
+    #secDeg;
+
+    #hourEL = document.querySelector('.hour-hand')! as HTMLElement;
+    #minEl = document.querySelector('.min-hand')! as HTMLElement;
+    #secondEl = document.querySelector('.second-hand')! as HTMLElement;
 
     constructor() {
-        // this.hour = new Date().getHours();
-        // this.minute = new Date().getMinutes();
-        // this.second = new Date().getSeconds();
-        this.hourHand = document.querySelector('.hour-hand');
-        this.minuteHand = document.querySelector('.min-hand');
-        this.secondHand = document.querySelector('.second-hand');
+        let time = new Date();
+
+        this.#secDeg = time.getSeconds() * 6 + 90;
+        this.#minDeg = time.getMinutes() * 6 + (time.getSeconds() * 0.1) + 90;
+        this.#hoursDeg = time.getHours() * 30 + (time.getMinutes() * 0.5) + 90;
+
+        this.#hourEL.style.transform = `translate(-100%, -50%)  rotate(${this.#hoursDeg}deg)`;
+        this.#minEl.style.transform = `translate(-100%, -50%)  rotate(${this.#minDeg}deg)`;
+        this.#secondEl.style.transform = `translate(-100%, -50%)  rotate(${this.#secDeg}deg)`;
+
     }
 
-    // setNow() {
-    //     this.hour = new Date().getHours();
-    //     this.minute = new Date().getMinutes();
-    //     this.second = new Date().getSeconds();
-    // }
+    updateTime() {
+        this.#secDeg += 0.6;
+        this.#minDeg += 6 / 600;
+        this.#hoursDeg += 6 / 36000;
 
-    setHour() {
-        if (!this.hourHand) return
-        let hour = new Date().getHours();
-        let deg = 30 * Math.abs(hour + 3);
-        this.hourHand.style.transform = `translate(-100%, -50%) rotate(${deg}deg)`;
-
-        setInterval(() => {
-            this.setHour()
-        }, 1000 * 60 * 60);
+        this.updateStyle()
     }
 
-    setMin() {
-        if (!this.minuteHand) return
-        let minute = new Date().getMinutes();
-        let deg = 6 * Math.abs(minute + 15);
-        this.minuteHand.style.transform = `translate(-100%, -50%) rotate(${deg}deg)`;
-
-        setInterval(() => {
-            this.setMin()
-        }, 1000 * 60);
+    updateStyle() {
+        this.#hourEL.style.transform = `translate(-100%, -50%)  rotate(${this.#hoursDeg}deg)`;
+        this.#minEl.style.transform = `translate(-100%, -50%)  rotate(${this.#minDeg}deg)`;
+        this.#secondEl.style.transform = `translate(-100%, -50%)  rotate(${this.#secDeg}deg)`;
     }
 
-    setSec() {
-        if (!this.secondHand) return
-        let second = new Date().getSeconds();
-        let deg = 1 * Math.abs(second + 15);
-        this.secondHand.style.transform = `translate(-100%, -50%) rotate(${deg}deg)`;
-
-        setInterval(() => {
-            this.setSec()
-        }, 1000);
-    }
 }
+
 
 const clock = new Clock();
 
-clock.setHour();
-clock.setMin();
-clock.setSec();
+// const updateClock = () => {
+//     clock.updateTime();
+// };
+
+// setInterval(() => {
+//     updateClock()
+// }, 100);
+
+let lastTime = 0;
+const interval = 100;
+
+function update(time: DOMHighResTimeStamp) {
+    if (time - lastTime >= interval) {
+        lastTime = time;
+        clock.updateTime();
+
+        // console.log('Interval reached:', time);
+    }
+
+    requestAnimationFrame(update);
+}
+
+requestAnimationFrame(update);
+
+
+
+
+
+
