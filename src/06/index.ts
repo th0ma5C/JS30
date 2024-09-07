@@ -98,5 +98,5 @@ const cityList = new CityList(endpoint, {}, searchInput, suggestions);
  * 正則前瞻用法
  * string.replace()第二個參數可使用函式
  * string.includes無法辨別大小寫
- * document.createDocumentFragment() 的使用
+ * document.createDocumentFragment() 的使用 
  */
