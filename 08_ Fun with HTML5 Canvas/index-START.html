@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>HTML5 Canvas</title>
+  <link rel="icon" href="https://fav.farm/🔥" />
+</head>
+
+<body>
+  <canvas id="draw" width="800" height="800"></canvas>
+
+  <label for="pen">筆刷顏色</label>
+  <input id="pen" type="color" value="#000000">
+
+  <label for="brushWidth">筆刷寬度:</label>
+  <input type="range" id="brushWidth" min="1" max="100"
+    value="100">
+
+  <label for="eraserToggle">橡皮擦模式:</label>
+  <input type="checkbox" id="eraserToggle">
+
+  <script src="/src/08/index.js"></script>
+
+  <style>
+    html,
+    body {
+      margin: 0;
+    }
+
+    #draw {
+      border: 1px solid black;
+    }
+  </style>
+
+</body>
+
+</html>
