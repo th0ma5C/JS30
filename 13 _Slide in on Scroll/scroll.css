@@ -1,0 +1,49 @@
+@keyframes leftIn {
+    from {
+        opacity: 0;
+        transform: translateX(-100%) scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0%) scale(1);
+    }
+}
+
+@keyframes rightIn {
+    from {
+        opacity: 0;
+        transform: translateX(100%) scale(0.95);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateX(0%) scale(1);
+    }
+}
+
+.site-wrap {
+
+    &>img {}
+
+    .align-left,
+    .align-right {
+        transform-origin: center;
+        view-timeline: --imgScroll block;
+    }
+
+    .align-left {
+        transform: translateX(-100%);
+        animation: leftIn both linear;
+        animation-timeline: --imgScroll;
+        animation-range: entry 0% cover 50%;
+
+    }
+
+    .align-right {
+        transform: translateX(100%);
+        animation: rightIn both linear;
+        animation-timeline: --imgScroll;
+        animation-range: entry 0% cover 50%;
+    }
+}
