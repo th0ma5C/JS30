@@ -37,14 +37,18 @@
   <div class="wrapper">
     <h2>LOCAL TAPAS</h2>
     <p></p>
+    <input type="text" placeholder="searching"
+      id="searchInput" autocomplete="off">
     <ul class="plates">
       <li>Loading Tapas...</li>
     </ul>
     <form class="add-items">
       <input type="text" name="item" placeholder="Item Name"
-        required>
+        required autocomplete="off">
       <input type="submit" value="+ Add Item"
         style="cursor: pointer;">
+      <div popover="manual" class="popover">不能為空白，請重新輸入
+      </div>
     </form>
   </div>
 
