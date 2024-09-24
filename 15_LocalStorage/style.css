@@ -126,3 +126,10 @@ h2 {
   margin-right: .5rem;
   height: 21px;
 }
+
+.timestamp {
+  display: none;
+  font-size: 8px;
+  line-height: 21px;
+  margin-right: 8px;
+}

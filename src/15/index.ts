@@ -5,7 +5,9 @@ interface List {
 
 interface Item {
     title: string,
-    checked: boolean
+    checked: boolean,
+    time: string,
+    id: number
 }
 
 class StorageController {
@@ -26,9 +28,6 @@ class StorageController {
     }
 
     listener() {
-        // this.#form.addEventListener('submit', (e) => this.setStorage(e));
-        // this.#list.addEventListener('click', (e) => this.itemCheck(e));
-
         this.#form.addEventListener('submit', this.setStorage.bind(this));
         this.#list.addEventListener('click', this.itemCheck.bind(this));
         this.#list.addEventListener('click', this.deleteItem.bind(this));
@@ -56,9 +55,11 @@ class StorageController {
 
         const title = input.value;
         const checked = false;
+        const time = new Date().toLocaleString();
+        const id = Date.now();
         if (!this.verifyInput(title)) return input.value = '';
 
-        this.#inputContent.push({ title, checked });
+        this.#inputContent.push({ title, checked, time, id });
 
         localStorage.setItem(this.#storageKey, JSON.stringify(this.#inputContent));
 
@@ -68,8 +69,6 @@ class StorageController {
     }
 
     getStorage() {
-        // const arr = localStorage.getItem(this.#storageKey);
-        // this.#inputContent = arr ? JSON.parse(arr) : [];
         try {
             const arr = localStorage.getItem(this.#storageKey);
             this.#inputContent = arr ? (JSON.parse(arr)) as Item[] : [];
@@ -94,7 +93,7 @@ class StorageController {
         showList.forEach((item, index) => {
             const checkBox = document.createElement('input');
             checkBox.id = `item${index}`;
-            checkBox.dataset.index = index.toString();
+            checkBox.dataset.index = item.id.toString();
             checkBox.type = 'checkbox';
             checkBox.checked = item.checked;
 
@@ -110,9 +109,14 @@ class StorageController {
             span.textContent = '❌';
             span.classList.add('delete');
 
+            const timeEl = document.createElement('span');
+            timeEl.textContent = item.time;
+            timeEl.classList.add('timestamp')
+
             const li = document.createElement('li');
             li.appendChild(checkBox);
             li.appendChild(label);
+            li.appendChild(timeEl);
             li.appendChild(editBtn);
             li.appendChild(span);
 
@@ -124,35 +128,24 @@ class StorageController {
     }
 
     itemCheck(e: MouseEvent) {
-        // let key: string;
-        // if (e.target instanceof HTMLLabelElement) {
-        //     key = e.target.textContent ?? '';
-        // }
-        // this.#inputContent.find(item => {
-        //     if (item.title == key) {
-        //         item.checked = !item.checked;
-        //     }
-        // })
-        // localStorage.setItem(this.#storageKey, JSON.stringify(this.#inputContent));
         if (!(e.target instanceof HTMLInputElement) || this.#isEditing) return;
         const target = e.target as HTMLInputElement;
-        const index = Number(target.dataset.index);
-        // const index = Number(target.id.replace(/[^\d]/g, ''));
-        this.#inputContent[index].checked = !this.#inputContent[index].checked;
+        const id = Number(target.dataset.index);
+        const item = this.#inputContent.find(item => item.id === id);
+        if (!item) return;
+        item.checked = target.checked;
         localStorage.setItem(this.#storageKey, JSON.stringify(this.#inputContent));
     }
 
     deleteItem(e: MouseEvent) {
         if (!(e.target instanceof HTMLSpanElement) || !e.target.classList.contains('delete')) return;
 
-        const target = e.target.parentElement?.querySelector('input') as HTMLInputElement;
-        if (target.checked) {
-            this.#inputContent = this.#inputContent.filter((item, index) => {
-                return index !== Number(target.dataset.index)
-            })
-            console.log(this.#inputContent);
-            localStorage.setItem(this.#storageKey, JSON.stringify(this.#inputContent));
-        }
+        const li = e.target.parentElement as HTMLElement;
+        const checkBox = li.querySelector('input') as HTMLInputElement;
+        const id = Number(checkBox.dataset.index);
+        if (!checkBox.checked) return;
+        this.#inputContent = this.#inputContent.filter(item => item.id !== id);
+        localStorage.setItem(this.#storageKey, JSON.stringify(this.#inputContent));
         this.updateList();
     }
 
@@ -164,7 +157,8 @@ class StorageController {
 
         const li = e.target.parentElement as HTMLElement;
         const label = li.querySelector('label') as HTMLLabelElement;
-        const key = Number(li.querySelector('input')?.dataset.index);
+        const checkBox = li.querySelector('input') as HTMLInputElement;
+        const id = Number(checkBox.dataset.index);
 
         const originText = label.textContent;
         label.textContent = '';
@@ -196,11 +190,11 @@ class StorageController {
             this.#isEditing = false;
             editBtn.hidden = false;
             const text = input.value.trim();
-            if (!text) {
-                label.textContent = originText;
-                return
-            }
-            this.#inputContent[key].title = text;
+            if (!text) return label.textContent = originText;
+
+            const item = this.#inputContent.find(item => item.id === id);
+            if (!item) return;
+            item.title = text;
             localStorage.setItem(this.#storageKey, JSON.stringify(this.#inputContent));
             this.updateList();
         })
@@ -227,5 +221,5 @@ const useStorage = new StorageController(list);
  * 透過 diff 演算法進行更新：手動實作類似虛擬 DOM 的機制，只更新那些發生變化的元素。
  * 保持現有的 DOM 結構：新增或刪除項目時，只操作新增的或需要刪除的部分。
  * ---------------------------------
- * todo 添加唯一ID讓增刪改正常運行
+ * 添加唯一ID讓增刪改正常運行
  */

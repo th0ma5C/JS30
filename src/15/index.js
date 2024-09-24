@@ -26,8 +26,6 @@ class StorageController {
         this.listener();
     }
     listener() {
-        // this.#form.addEventListener('submit', (e) => this.setStorage(e));
-        // this.#list.addEventListener('click', (e) => this.itemCheck(e));
         __classPrivateFieldGet(this, _StorageController_form, "f").addEventListener('submit', this.setStorage.bind(this));
         __classPrivateFieldGet(this, _StorageController_list, "f").addEventListener('click', this.itemCheck.bind(this));
         __classPrivateFieldGet(this, _StorageController_list, "f").addEventListener('click', this.deleteItem.bind(this));
@@ -52,16 +50,16 @@ class StorageController {
         const input = __classPrivateFieldGet(this, _StorageController_form, "f").querySelector('[name=item]');
         const title = input.value;
         const checked = false;
+        const time = new Date().toLocaleString();
+        const id = Date.now();
         if (!this.verifyInput(title))
             return input.value = '';
-        __classPrivateFieldGet(this, _StorageController_inputContent, "f").push({ title, checked });
+        __classPrivateFieldGet(this, _StorageController_inputContent, "f").push({ title, checked, time, id });
         localStorage.setItem(__classPrivateFieldGet(this, _StorageController_storageKey, "f"), JSON.stringify(__classPrivateFieldGet(this, _StorageController_inputContent, "f")));
         this.updateList();
         input.value = '';
     }
     getStorage() {
-        // const arr = localStorage.getItem(this.#storageKey);
-        // this.#inputContent = arr ? JSON.parse(arr) : [];
         try {
             const arr = localStorage.getItem(__classPrivateFieldGet(this, _StorageController_storageKey, "f"));
             __classPrivateFieldSet(this, _StorageController_inputContent, arr ? (JSON.parse(arr)) : [], "f");
@@ -83,7 +81,7 @@ class StorageController {
         showList.forEach((item, index) => {
             const checkBox = document.createElement('input');
             checkBox.id = `item${index}`;
-            checkBox.dataset.index = index.toString();
+            checkBox.dataset.index = item.id.toString();
             checkBox.type = 'checkbox';
             checkBox.checked = item.checked;
             const label = document.createElement('label');
@@ -95,9 +93,13 @@ class StorageController {
             const span = document.createElement('span');
             span.textContent = '❌';
             span.classList.add('delete');
+            const timeEl = document.createElement('span');
+            timeEl.textContent = item.time;
+            timeEl.classList.add('timestamp');
             const li = document.createElement('li');
             li.appendChild(checkBox);
             li.appendChild(label);
+            li.appendChild(timeEl);
             li.appendChild(editBtn);
             li.appendChild(span);
             fragment.appendChild(li);
@@ -106,47 +108,37 @@ class StorageController {
         __classPrivateFieldGet(this, _StorageController_list, "f").appendChild(fragment);
     }
     itemCheck(e) {
-        // let key: string;
-        // if (e.target instanceof HTMLLabelElement) {
-        //     key = e.target.textContent ?? '';
-        // }
-        // this.#inputContent.find(item => {
-        //     if (item.title == key) {
-        //         item.checked = !item.checked;
-        //     }
-        // })
-        // localStorage.setItem(this.#storageKey, JSON.stringify(this.#inputContent));
         if (!(e.target instanceof HTMLInputElement) || __classPrivateFieldGet(this, _StorageController_isEditing, "f"))
             return;
         const target = e.target;
-        const index = Number(target.dataset.index);
-        // const index = Number(target.id.replace(/[^\d]/g, ''));
-        __classPrivateFieldGet(this, _StorageController_inputContent, "f")[index].checked = !__classPrivateFieldGet(this, _StorageController_inputContent, "f")[index].checked;
+        const id = Number(target.dataset.index);
+        const item = __classPrivateFieldGet(this, _StorageController_inputContent, "f").find(item => item.id === id);
+        if (!item)
+            return;
+        item.checked = target.checked;
         localStorage.setItem(__classPrivateFieldGet(this, _StorageController_storageKey, "f"), JSON.stringify(__classPrivateFieldGet(this, _StorageController_inputContent, "f")));
     }
     deleteItem(e) {
-        var _a;
         if (!(e.target instanceof HTMLSpanElement) || !e.target.classList.contains('delete'))
             return;
-        const target = (_a = e.target.parentElement) === null || _a === void 0 ? void 0 : _a.querySelector('input');
-        if (target.checked) {
-            __classPrivateFieldSet(this, _StorageController_inputContent, __classPrivateFieldGet(this, _StorageController_inputContent, "f").filter((item, index) => {
-                return index !== Number(target.dataset.index);
-            }), "f");
-            console.log(__classPrivateFieldGet(this, _StorageController_inputContent, "f"));
-            localStorage.setItem(__classPrivateFieldGet(this, _StorageController_storageKey, "f"), JSON.stringify(__classPrivateFieldGet(this, _StorageController_inputContent, "f")));
-        }
+        const li = e.target.parentElement;
+        const checkBox = li.querySelector('input');
+        const id = Number(checkBox.dataset.index);
+        if (!checkBox.checked)
+            return;
+        __classPrivateFieldSet(this, _StorageController_inputContent, __classPrivateFieldGet(this, _StorageController_inputContent, "f").filter(item => item.id !== id), "f");
+        localStorage.setItem(__classPrivateFieldGet(this, _StorageController_storageKey, "f"), JSON.stringify(__classPrivateFieldGet(this, _StorageController_inputContent, "f")));
         this.updateList();
     }
     editItem(e) {
-        var _a;
         if (!(e.target instanceof HTMLButtonElement) ||
             !e.target.classList.contains('editBtn'))
             return;
         __classPrivateFieldSet(this, _StorageController_isEditing, true, "f");
         const li = e.target.parentElement;
         const label = li.querySelector('label');
-        const key = Number((_a = li.querySelector('input')) === null || _a === void 0 ? void 0 : _a.dataset.index);
+        const checkBox = li.querySelector('input');
+        const id = Number(checkBox.dataset.index);
         const originText = label.textContent;
         label.textContent = '';
         const input = document.createElement('input');
@@ -170,11 +162,12 @@ class StorageController {
             __classPrivateFieldSet(this, _StorageController_isEditing, false, "f");
             editBtn.hidden = false;
             const text = input.value.trim();
-            if (!text) {
-                label.textContent = originText;
+            if (!text)
+                return label.textContent = originText;
+            const item = __classPrivateFieldGet(this, _StorageController_inputContent, "f").find(item => item.id === id);
+            if (!item)
                 return;
-            }
-            __classPrivateFieldGet(this, _StorageController_inputContent, "f")[key].title = text;
+            item.title = text;
             localStorage.setItem(__classPrivateFieldGet(this, _StorageController_storageKey, "f"), JSON.stringify(__classPrivateFieldGet(this, _StorageController_inputContent, "f")));
             this.updateList();
         });
@@ -198,5 +191,5 @@ const useStorage = new StorageController(list);
  * 透過 diff 演算法進行更新：手動實作類似虛擬 DOM 的機制，只更新那些發生變化的元素。
  * 保持現有的 DOM 結構：新增或刪除項目時，只操作新增的或需要刪除的部分。
  * ---------------------------------
- * todo 添加唯一ID讓增刪改正常運行
+ * 添加唯一ID讓增刪改正常運行
  */ 
