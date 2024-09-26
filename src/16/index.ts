@@ -47,7 +47,21 @@ function getRandomColor() {
     return color;
 }
 
+
 const throttleGetColor = throttle();
+
+// function cloneBac() {
+//     const fragment = document.createDocumentFragment();
+
+//     const clone = document.createElement('div');
+//     clone.classList.add('cloneShadow');
+
+//     for (let i = 0; i < 4; i++) {
+//         fragment.appendChild(clone);
+//     }
+
+//     targetText.appendChild(fragment);
+// }
 
 
 document.addEventListener('mousemove', (e: MouseEvent) => {
