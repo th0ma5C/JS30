@@ -47,3 +47,6 @@ function createNode() {
     container.appendChild(fragment);
 }
 createNode();
+/**
+ * 使用正則對數據進行整理並排列
+ */ 
