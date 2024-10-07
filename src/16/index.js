@@ -19,7 +19,7 @@ function moveShadow(e) {
     ${deltaY}px ${deltaX}px 0 ${color}
     `;
 }
-function throttle() {
+function throttle16() {
     let color = getRandomColor();
     let timer = null;
     return () => {
@@ -40,7 +40,7 @@ function getRandomColor() {
     }
     return color;
 }
-const throttleGetColor = throttle();
+const throttleGetColor = throttle16();
 // function cloneBac() {
 //     const fragment = document.createDocumentFragment();
 //     const clone = document.createElement('div');

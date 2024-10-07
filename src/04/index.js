@@ -1,13 +1,4 @@
 "use strict";
-var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
-    function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
-    return new (P || (P = Promise))(function (resolve, reject) {
-        function fulfilled(value) { try { step(generator.next(value)); } catch (e) { reject(e); } }
-        function rejected(value) { try { step(generator["throw"](value)); } catch (e) { reject(e); } }
-        function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
-        step((generator = generator.apply(thisArg, _arguments || [])).next());
-    });
-};
 const inventors = [
     { first: 'Albert', last: 'Einstein', year: 1879, passed: 1955 },
     { first: 'Isaac', last: 'Newton', year: 1643, passed: 1727 },
@@ -60,15 +51,15 @@ const inventorsSortByLifetime = inventors.sort((a, b) => {
 });
 console.table(inventorsSortByLifetime);
 const wikiQueryUrl = 'https://en.wikipedia.org/w/api.php?action=query&list=categorymembers&cmtitle=Category:Boulevards_in_Paris&cmlimit=100&format=json&origin=*';
-const fetchListOfBoulevards = (apiUrl) => __awaiter(void 0, void 0, void 0, function* () {
+const fetchListOfBoulevards = async (apiUrl) => {
     try {
-        const response = yield fetch(apiUrl, {
+        const response = await fetch(apiUrl, {
             method: 'GET',
             headers: {
                 'Content-Type': 'application/json',
             },
         });
-        const data = yield response.json();
+        const data = await response.json();
         const boulevards = data.query.categorymembers.map(item => item.title);
         // console.log(boulevards);
         return boulevards;
@@ -77,7 +68,7 @@ const fetchListOfBoulevards = (apiUrl) => __awaiter(void 0, void 0, void 0, func
         console.log('fetch data failed', error);
         return [];
     }
-});
+};
 function nameContainDE(list) {
     const de = /de/;
     let result = list.filter((name) => {

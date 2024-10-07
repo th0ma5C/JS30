@@ -22,11 +22,11 @@ class Mark {
         const { width, height, x, y } = hoverEl.getBoundingClientRect();
 
         if (this.#isInit) {
-            this.#markEl.style.transition = 'none';
             this.#isInit = false;
         } else {
-            this.#markEl.style.transition = '';
+            this.#markEl.style.transition = 'all .2s';
         }
+        this.#markEl.style.opacity = `1`;
         this.#markEl.style.height = `${height}px`;
         this.#markEl.style.width = `${width}px`;
         this.#markEl.style.translate = `${x}px ${y}px`;

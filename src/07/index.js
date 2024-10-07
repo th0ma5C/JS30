@@ -1,10 +1,4 @@
 "use strict";
-var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (receiver, state, kind, f) {
-    if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a getter");
-    if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
-    return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
-};
-var _ArrTool_year;
 const guys = [
     { name: 'Wes', year: 1988 },
     { name: 'Kait', year: 1986 },
@@ -28,14 +22,12 @@ const comments = [
 // Find the comment with this ID
 // delete the comment with the ID of 823423
 class ArrTool {
-    constructor() {
-        _ArrTool_year.set(this, new Date().getFullYear());
-    }
+    #year = new Date().getFullYear();
     anyAbove19(arr) {
-        return arr.some(item => (__classPrivateFieldGet(this, _ArrTool_year, "f") - item.year) >= 19);
+        return arr.some(item => (this.#year - item.year) >= 19);
     }
     everyAbove19(arr) {
-        return arr.every(item => (__classPrivateFieldGet(this, _ArrTool_year, "f") - item.year) >= 19);
+        return arr.every(item => (this.#year - item.year) >= 19);
     }
     findID_823423(arr) {
         return arr.find(item => {
@@ -50,7 +42,6 @@ class ArrTool {
         return ans;
     }
 }
-_ArrTool_year = new WeakMap();
 const tool = new ArrTool();
 console.log(tool.anyAbove19(guys));
 console.log(tool.everyAbove19(guys));

@@ -1,36 +1,24 @@
 "use strict";
-var __classPrivateFieldSet = (this && this.__classPrivateFieldSet) || function (receiver, state, value, kind, f) {
-    if (kind === "m") throw new TypeError("Private method is not writable");
-    if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a setter");
-    if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot write private member to an object whose class did not declare it");
-    return (kind === "a" ? f.call(receiver, value) : f ? f.value = value : state.set(receiver, value)), value;
-};
-var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (receiver, state, kind, f) {
-    if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a getter");
-    if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
-    return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
-};
-var _StorageController_form, _StorageController_list, _StorageController_storageKey, _StorageController_inputContent, _StorageController_isEditing, _StorageController_searchInput, _StorageController_searchWord;
 class StorageController {
+    #form;
+    #list;
+    #storageKey = 'LOCAL TAPAS';
+    #inputContent = [];
+    #isEditing = false;
+    #searchInput = document.querySelector('#searchInput');
+    #searchWord = '';
     constructor(inputSet) {
-        _StorageController_form.set(this, void 0);
-        _StorageController_list.set(this, void 0);
-        _StorageController_storageKey.set(this, 'LOCAL TAPAS');
-        _StorageController_inputContent.set(this, []);
-        _StorageController_isEditing.set(this, false);
-        _StorageController_searchInput.set(this, document.querySelector('#searchInput'));
-        _StorageController_searchWord.set(this, '');
-        __classPrivateFieldSet(this, _StorageController_form, document.querySelector(inputSet.form), "f");
-        __classPrivateFieldSet(this, _StorageController_list, document.querySelector(inputSet.list), "f");
+        this.#form = document.querySelector(inputSet.form);
+        this.#list = document.querySelector(inputSet.list);
         this.initList();
         this.listener();
     }
     listener() {
-        __classPrivateFieldGet(this, _StorageController_form, "f").addEventListener('submit', this.setStorage.bind(this));
-        __classPrivateFieldGet(this, _StorageController_list, "f").addEventListener('click', this.itemCheck.bind(this));
-        __classPrivateFieldGet(this, _StorageController_list, "f").addEventListener('click', this.deleteItem.bind(this));
-        __classPrivateFieldGet(this, _StorageController_list, "f").addEventListener('click', this.editItem.bind(this));
-        __classPrivateFieldGet(this, _StorageController_searchInput, "f").addEventListener('input', this.handleSearch.bind(this));
+        this.#form.addEventListener('submit', this.setStorage.bind(this));
+        this.#list.addEventListener('click', this.itemCheck.bind(this));
+        this.#list.addEventListener('click', this.deleteItem.bind(this));
+        this.#list.addEventListener('click', this.editItem.bind(this));
+        this.#searchInput.addEventListener('input', this.handleSearch.bind(this));
     }
     verifyInput(input) {
         let timer;
@@ -38,7 +26,7 @@ class StorageController {
             return true;
         if (timer)
             clearTimeout(timer);
-        const popover = __classPrivateFieldGet(this, _StorageController_form, "f").querySelector('.popover');
+        const popover = this.#form.querySelector('.popover');
         popover.showPopover();
         timer = setTimeout(() => {
             popover.hidePopover();
@@ -47,26 +35,26 @@ class StorageController {
     }
     setStorage(e) {
         e.preventDefault();
-        const input = __classPrivateFieldGet(this, _StorageController_form, "f").querySelector('[name=item]');
+        const input = this.#form.querySelector('[name=item]');
         const title = input.value;
         const checked = false;
         const time = new Date().toLocaleString();
         const id = Date.now();
         if (!this.verifyInput(title))
             return input.value = '';
-        __classPrivateFieldGet(this, _StorageController_inputContent, "f").push({ title, checked, time, id });
-        localStorage.setItem(__classPrivateFieldGet(this, _StorageController_storageKey, "f"), JSON.stringify(__classPrivateFieldGet(this, _StorageController_inputContent, "f")));
+        this.#inputContent.push({ title, checked, time, id });
+        localStorage.setItem(this.#storageKey, JSON.stringify(this.#inputContent));
         this.updateList();
         input.value = '';
     }
     getStorage() {
         try {
-            const arr = localStorage.getItem(__classPrivateFieldGet(this, _StorageController_storageKey, "f"));
-            __classPrivateFieldSet(this, _StorageController_inputContent, arr ? (JSON.parse(arr)) : [], "f");
+            const arr = localStorage.getItem(this.#storageKey);
+            this.#inputContent = arr ? (JSON.parse(arr)) : [];
         }
         catch (error) {
             console.error(error);
-            __classPrivateFieldSet(this, _StorageController_inputContent, [], "f");
+            this.#inputContent = [];
         }
     }
     initList() {
@@ -75,8 +63,8 @@ class StorageController {
     }
     updateList() {
         const fragment = document.createDocumentFragment();
-        const showList = __classPrivateFieldGet(this, _StorageController_inputContent, "f").filter(item => {
-            return item.title.indexOf(__classPrivateFieldGet(this, _StorageController_searchWord, "f")) !== -1;
+        const showList = this.#inputContent.filter(item => {
+            return item.title.indexOf(this.#searchWord) !== -1;
         });
         showList.forEach((item, index) => {
             const checkBox = document.createElement('input');
@@ -104,19 +92,19 @@ class StorageController {
             li.appendChild(span);
             fragment.appendChild(li);
         });
-        __classPrivateFieldGet(this, _StorageController_list, "f").innerHTML = '';
-        __classPrivateFieldGet(this, _StorageController_list, "f").appendChild(fragment);
+        this.#list.innerHTML = '';
+        this.#list.appendChild(fragment);
     }
     itemCheck(e) {
-        if (!(e.target instanceof HTMLInputElement) || __classPrivateFieldGet(this, _StorageController_isEditing, "f"))
+        if (!(e.target instanceof HTMLInputElement) || this.#isEditing)
             return;
         const target = e.target;
         const id = Number(target.dataset.index);
-        const item = __classPrivateFieldGet(this, _StorageController_inputContent, "f").find(item => item.id === id);
+        const item = this.#inputContent.find(item => item.id === id);
         if (!item)
             return;
         item.checked = target.checked;
-        localStorage.setItem(__classPrivateFieldGet(this, _StorageController_storageKey, "f"), JSON.stringify(__classPrivateFieldGet(this, _StorageController_inputContent, "f")));
+        localStorage.setItem(this.#storageKey, JSON.stringify(this.#inputContent));
     }
     deleteItem(e) {
         if (!(e.target instanceof HTMLSpanElement) || !e.target.classList.contains('delete'))
@@ -126,15 +114,15 @@ class StorageController {
         const id = Number(checkBox.dataset.index);
         if (!checkBox.checked)
             return;
-        __classPrivateFieldSet(this, _StorageController_inputContent, __classPrivateFieldGet(this, _StorageController_inputContent, "f").filter(item => item.id !== id), "f");
-        localStorage.setItem(__classPrivateFieldGet(this, _StorageController_storageKey, "f"), JSON.stringify(__classPrivateFieldGet(this, _StorageController_inputContent, "f")));
+        this.#inputContent = this.#inputContent.filter(item => item.id !== id);
+        localStorage.setItem(this.#storageKey, JSON.stringify(this.#inputContent));
         this.updateList();
     }
     editItem(e) {
         if (!(e.target instanceof HTMLButtonElement) ||
             !e.target.classList.contains('editBtn'))
             return;
-        __classPrivateFieldSet(this, _StorageController_isEditing, true, "f");
+        this.#isEditing = true;
         const li = e.target.parentElement;
         const label = li.querySelector('label');
         const checkBox = li.querySelector('input');
@@ -143,7 +131,7 @@ class StorageController {
         label.textContent = '';
         const input = document.createElement('input');
         input.type = 'text';
-        input.placeholder = originText !== null && originText !== void 0 ? originText : '';
+        input.placeholder = originText ?? '';
         input.classList.add('editInput');
         const completeBtn = document.createElement('button');
         completeBtn.textContent = '取消';
@@ -159,26 +147,25 @@ class StorageController {
         });
         completeBtn.addEventListener('click', () => {
             completeBtn.remove();
-            __classPrivateFieldSet(this, _StorageController_isEditing, false, "f");
+            this.#isEditing = false;
             editBtn.hidden = false;
             const text = input.value.trim();
             if (!text)
                 return label.textContent = originText;
-            const item = __classPrivateFieldGet(this, _StorageController_inputContent, "f").find(item => item.id === id);
+            const item = this.#inputContent.find(item => item.id === id);
             if (!item)
                 return;
             item.title = text;
-            localStorage.setItem(__classPrivateFieldGet(this, _StorageController_storageKey, "f"), JSON.stringify(__classPrivateFieldGet(this, _StorageController_inputContent, "f")));
+            localStorage.setItem(this.#storageKey, JSON.stringify(this.#inputContent));
             this.updateList();
         });
     }
     handleSearch(e) {
         const target = e.target;
-        __classPrivateFieldSet(this, _StorageController_searchWord, target.value.trim(), "f");
+        this.#searchWord = target.value.trim();
         this.updateList();
     }
 }
-_StorageController_form = new WeakMap(), _StorageController_list = new WeakMap(), _StorageController_storageKey = new WeakMap(), _StorageController_inputContent = new WeakMap(), _StorageController_isEditing = new WeakMap(), _StorageController_searchInput = new WeakMap(), _StorageController_searchWord = new WeakMap();
 const list = {
     form: '.add-items',
     list: '.plates'

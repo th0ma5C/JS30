@@ -33,7 +33,7 @@ console.info('this is info');
  */
 // Testing
 const p = document.querySelector('p');
-console.assert(p === null || p === void 0 ? void 0 : p.classList.contains('ouch'), "that's wrong");
+console.assert(p?.classList.contains('ouch'), "that's wrong");
 /**
  * console.assert(expression, message)會進行條件判斷
  * 若表達式結果為true，不會輸出訊息

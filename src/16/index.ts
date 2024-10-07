@@ -24,7 +24,7 @@ function moveShadow(e: MouseEvent) {
     `;
 }
 
-function throttle() {
+function throttle16() {
     let color = getRandomColor();
     let timer: ReturnType<typeof setTimeout> | null = null;
     return () => {
@@ -48,7 +48,7 @@ function getRandomColor() {
 }
 
 
-const throttleGetColor = throttle();
+const throttleGetColor = throttle16();
 
 // function cloneBac() {
 //     const fragment = document.createDocumentFragment();

@@ -19,9 +19,8 @@ const bands = [
 const reg = /^(the|an|a)\b/i;
 function sortByStart() {
     const result = bands.map((item) => {
-        var _a;
         const arr = item.split(' ');
-        const start = (_a = arr.find(str => !reg.test(str))) !== null && _a !== void 0 ? _a : '';
+        const start = arr.find(str => !reg.test(str)) ?? '';
         return {
             item,
             start

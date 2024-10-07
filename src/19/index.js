@@ -1,26 +1,14 @@
 "use strict";
-var __classPrivateFieldSet = (this && this.__classPrivateFieldSet) || function (receiver, state, value, kind, f) {
-    if (kind === "m") throw new TypeError("Private method is not writable");
-    if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a setter");
-    if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot write private member to an object whose class did not declare it");
-    return (kind === "a" ? f.call(receiver, value) : f ? f.value = value : state.set(receiver, value)), value;
-};
-var __classPrivateFieldGet = (this && this.__classPrivateFieldGet) || function (receiver, state, kind, f) {
-    if (kind === "a" && !f) throw new TypeError("Private accessor was defined without a getter");
-    if (typeof state === "function" ? receiver !== state || !f : !state.has(receiver)) throw new TypeError("Cannot read private member from an object whose class did not declare it");
-    return kind === "m" ? f : kind === "a" ? f.call(receiver) : f ? f.value : state.get(receiver);
-};
-var _WebCam_videoEl, _WebCam_strip, _WebCam_rgbState;
 const video = document.querySelector('.player');
 const canvas = document.querySelector('.photo');
 const strip = document.querySelector('.strip');
 const snap = document.querySelector('.snap');
 class WebCam {
+    #videoEl;
+    #strip = document.querySelector('.strip');
+    #rgbState = { temp: 0, tint: 0, filter: 'origin' };
     constructor(selector) {
-        _WebCam_videoEl.set(this, void 0);
-        _WebCam_strip.set(this, document.querySelector('.strip'));
-        _WebCam_rgbState.set(this, { temp: 0, tint: 0, filter: 'origin' });
-        __classPrivateFieldSet(this, _WebCam_videoEl, document.querySelector(selector), "f");
+        this.#videoEl = document.querySelector(selector);
         this.initCam();
         // this.#videoEl.addEventListener('loadedmetadata', () => {
         // })
@@ -30,8 +18,8 @@ class WebCam {
         navigator.mediaDevices.getUserMedia({
             video: true
         }).then((stream) => {
-            __classPrivateFieldGet(this, _WebCam_videoEl, "f").srcObject = stream;
-            __classPrivateFieldGet(this, _WebCam_videoEl, "f").play();
+            this.#videoEl.srcObject = stream;
+            this.#videoEl.play();
         }).catch((err) => {
             console.log(err);
         });
@@ -40,11 +28,11 @@ class WebCam {
         const ctx = canvas.getContext('2d', { willReadFrequently: true });
         if (!ctx)
             throw Error('missing canvas ctx');
-        const width = __classPrivateFieldGet(this, _WebCam_videoEl, "f").videoWidth;
-        const height = __classPrivateFieldGet(this, _WebCam_videoEl, "f").videoHeight;
+        const width = this.#videoEl.videoWidth;
+        const height = this.#videoEl.videoHeight;
         canvas.width = width;
         canvas.height = height;
-        ctx.drawImage(__classPrivateFieldGet(this, _WebCam_videoEl, "f"), 0, 0, width, height);
+        ctx.drawImage(this.#videoEl, 0, 0, width, height);
         let pixels = ctx.getImageData(0, 0, width, height);
         pixels = this.setColor(pixels);
         ctx.putImageData(pixels, 0, 0);
@@ -56,25 +44,25 @@ class WebCam {
         link.href = data;
         link.setAttribute('download', 'img');
         link.innerHTML = `<img src="${data}"/>`;
-        __classPrivateFieldGet(this, _WebCam_strip, "f").insertBefore(link, __classPrivateFieldGet(this, _WebCam_strip, "f").firstChild);
+        this.#strip.insertBefore(link, this.#strip.firstChild);
     }
     getColorInput() {
         const rgbContainer = document.querySelector('.rgb');
         rgbContainer.querySelectorAll('input').forEach(input => {
             const elName = input.name;
             const val = Number(input.value);
-            __classPrivateFieldGet(this, _WebCam_rgbState, "f")[elName] = val;
+            this.#rgbState[elName] = val;
         });
         const filter = document.querySelector('.imgFilter');
         filter.querySelectorAll('input').forEach(input => {
             if (!input.checked)
                 return;
             const val = input.value;
-            __classPrivateFieldGet(this, _WebCam_rgbState, "f").filter = val;
+            this.#rgbState.filter = val;
         });
     }
     adjustState(r, g, b) {
-        const { temp, tint } = __classPrivateFieldGet(this, _WebCam_rgbState, "f");
+        const { temp, tint } = this.#rgbState;
         const newR = r + temp * 50;
         const newB = b - temp * 50;
         const newG = g + tint * 50;
@@ -103,7 +91,7 @@ class WebCam {
         }
     }
     applyFilter(imageData) {
-        switch (__classPrivateFieldGet(this, _WebCam_rgbState, "f").filter) {
+        switch (this.#rgbState.filter) {
             case 'grayscale':
                 this.grayScale(imageData);
                 break;
@@ -129,7 +117,6 @@ class WebCam {
         return target;
     }
 }
-_WebCam_videoEl = new WeakMap(), _WebCam_strip = new WeakMap(), _WebCam_rgbState = new WeakMap();
 const Cam = new WebCam('.player');
 video.addEventListener('loadedmetadata', () => {
     Cam.setIntoCanvas(canvas);

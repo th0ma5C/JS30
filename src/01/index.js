@@ -1,5 +1,7 @@
 "use strict";
 class KeySoundList {
+    keys;
+    audioList;
     constructor() {
         this.keys = document.querySelectorAll('.key');
         this.audioList = document.getElementsByTagName('audio');
